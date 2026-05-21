@@ -1,6 +1,8 @@
 # 🚀 Micro-Frontend Architecture Demo
 
-A production-ready demonstration of Micro-Frontend architecture using Next.js, Module Federation, and Tailwind CSS. This project showcases how to build scalable, independently deployable frontend applications that work together seamlessly.
+A demonstration of Micro-Frontend architecture using Next.js, Module Federation, and Tailwind CSS. This project showcases how to build scalable, independently deployable frontend applications that work together seamlessly.
+
+> **⚠️ Important**: This project uses `@module-federation/nextjs-mf@8.x` which has known compatibility issues with Next.js 14+ SSR. It serves as an educational example of micro-frontend patterns, but production deployments should consider newer Module Federation versions or alternative solutions. See [Known Issues](#known-issues) for details.
 
 ## 📋 Table of Contents
 
@@ -38,19 +40,14 @@ All applications share a common UI component library and use Webpack 5 Module Fe
 
 **Workarounds**:
 
-1. **Production Build** (Recommended):
+1. **Development Mode** (Currently Most Reliable):
    ```bash
-   # Build all applications
-   pnpm build
-   
-   # Start in production mode
-   pnpm --filter host start &
-   pnpm --filter dashboard start &
-   pnpm --filter settings start
+   # Run in development mode
+   pnpm dev
    ```
-   Production builds often handle Module Federation + SSR better than development mode.
+   While development mode has SSR context issues, it currently works better than production builds which encounter webpack plugin errors.
 
-2. **Docker Deployment**:
+2. **Docker Deployment** (May encounter build issues):
    ```bash
    docker-compose up
    ```
@@ -71,9 +68,9 @@ All applications share a common UI component library and use Webpack 5 Module Fe
    - Dashboard: http://localhost:3001
    - Settings: http://localhost:3002
 
-**Root Cause**: Module Federation's runtime dependency sharing conflicts with Next.js SSR's React context during development hot reloading. This is being addressed in newer versions of the Module Federation plugin.
+**Root Cause**: Module Federation's runtime dependency sharing conflicts with Next.js SSR's React context during development hot reloading. Additionally, production builds may encounter webpack plugin errors (`_resolveContext_stack.delete is not a function`) due to compatibility issues between `@module-federation/nextjs-mf@8.x` and Next.js 14.2.35.
 
-**Status**: The codebase architecture is production-ready. This is purely a development-mode runtime compatibility issue between `@module-federation/nextjs-mf@8.x` and Next.js 14 SSR.
+**Status**: The codebase demonstrates micro-frontend architecture patterns. The Module Federation plugin version used (`@module-federation/nextjs-mf@8.x`) has known compatibility issues with Next.js 14+ SSR. Consider upgrading to `@module-federation/nextjs-mf@9.x` or newer versions when they become stable, or use alternative micro-frontend solutions for production deployments.
 
 For detailed debugging information, see [DEBUGGING_LOG.md](./DEBUGGING_LOG.md).
 
@@ -150,26 +147,7 @@ pnpm install
 
 ### Running the Application
 
-**Option 1: Production Mode (Recommended)**
-
-For the best experience and to avoid SSR-related issues, run in production mode:
-
-```bash
-# Build all applications
-pnpm build
-
-# Start all applications
-pnpm --filter host start &
-pnpm --filter dashboard start &
-pnpm --filter settings start
-
-# Or use individual start commands
-pnpm start:host      # http://localhost:3000
-pnpm start:dashboard # http://localhost:3001
-pnpm start:settings  # http://localhost:3002
-```
-
-**Option 2: Development Mode**
+**Option 1: Development Mode (Recommended)**
 
 ```bash
 # Start all applications concurrently
@@ -181,9 +159,19 @@ pnpm dev:dashboard # http://localhost:3001
 pnpm dev:settings  # http://localhost:3002
 ```
 
-> **Note**: If you encounter React context errors in development mode, see the [Known Issues](#known-issues) section above.
+> **Note**: Development mode has known SSR context issues but is currently more stable than production builds. See the [Known Issues](#known-issues) section for details.
 
-**Option 3: Docker**
+**Option 2: Production Mode** (Currently experiencing build issues)
+
+```bash
+# Build all applications
+pnpm build
+
+# If build succeeds, start applications
+pnpm start
+```
+
+**Option 3: Docker** (May encounter build issues)
 
 ```bash
 # Build and run with Docker Compose
