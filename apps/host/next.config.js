@@ -24,10 +24,12 @@ const nextConfig = {
           react: {
             singleton: true,
             requiredVersion: false,
+            eager: true,
           },
           'react-dom': {
             singleton: true,
             requiredVersion: false,
+            eager: true,
           },
         },
         extraOptions: {

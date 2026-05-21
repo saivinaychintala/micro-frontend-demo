@@ -1,10 +1,18 @@
-'use client';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export function Navigation() {
-  const pathname = usePathname();
+interface NavigationProps {
+  currentPath?: string;
+}
+
+export function Navigation({ currentPath = '/' }: NavigationProps) {
+  const [pathname, setPathname] = useState(currentPath);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setPathname(window.location.pathname);
+  }, []);
 
   const links = [
     { href: '/', label: 'Home', icon: HomeIcon },
@@ -34,6 +42,7 @@ export function Navigation() {
                       ? 'bg-blue-50 text-blue-600'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
+                  onClick={() => mounted && setPathname(link.href)}
                 >
                   <Icon className="w-5 h-5 mr-3" />
                   <span className="font-medium">{link.label}</span>
