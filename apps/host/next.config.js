@@ -2,8 +2,15 @@ const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@micro-frontend-demo/ui'],
   webpack(config, options) {
     const { isServer } = options;
+    
+    // Ensure webpack uses the compiled dist folder for the UI package
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@micro-frontend-demo/ui$': require.resolve('@micro-frontend-demo/ui'),
+    };
     
     config.plugins.push(
       new NextFederationPlugin({

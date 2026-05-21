@@ -8,11 +8,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"pnpm --filter host dev\" \"pnpm --filter dashboard dev\" \"pnpm --filter settings dev\"",
+    "build:ui": "pnpm --filter @micro-frontend-demo/ui build",
+    "dev": "pnpm build:ui && concurrently \"pnpm --filter @micro-frontend-demo/ui dev\" \"pnpm --filter host dev\" \"pnpm --filter dashboard dev\" \"pnpm --filter settings dev\"",
     "dev:host": "pnpm --filter host dev",
     "dev:dashboard": "pnpm --filter dashboard dev",
     "dev:settings": "pnpm --filter settings dev",
-    "build": "pnpm -r build",
+    "build": "pnpm build:ui && pnpm -r --filter './apps/*' build",
     "build:host": "pnpm --filter host build",
     "build:dashboard": "pnpm --filter dashboard build",
     "build:settings": "pnpm --filter settings build",
@@ -31,6 +32,7 @@
   "author": "Vinay Chintala",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "tsup": "^8.5.1"
   }
 }
