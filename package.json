@@ -17,6 +17,10 @@
     "build:host": "pnpm --filter host build",
     "build:dashboard": "pnpm --filter dashboard build",
     "build:settings": "pnpm --filter settings build",
+    "start": "concurrently \"pnpm start:host\" \"pnpm start:dashboard\" \"pnpm start:settings\"",
+    "start:host": "pnpm --filter host start",
+    "start:dashboard": "pnpm --filter dashboard start",
+    "start:settings": "pnpm --filter settings start",
     "lint": "pnpm -r lint",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "type-check": "pnpm -r type-check"

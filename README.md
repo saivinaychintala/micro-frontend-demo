@@ -5,6 +5,7 @@ A production-ready demonstration of Micro-Frontend architecture using Next.js, M
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Known Issues](#known-issues)
 - [Architecture](#architecture)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -26,6 +27,55 @@ This project demonstrates a complete micro-frontend setup with three independent
 3. **Settings Remote** (Port 3002) - Configuration and preferences micro-app
 
 All applications share a common UI component library and use Webpack 5 Module Federation for runtime integration.
+
+## ⚠️ Known Issues
+
+### React Context SSR Compatibility
+
+**Issue**: The application may encounter React context/hook errors during development with Server-Side Rendering (SSR) enabled. This is a known limitation of `@module-federation/nextjs-mf` v8.x with Next.js Pages Router.
+
+**Error**: `TypeError: Cannot read properties of null (reading 'useContext')`
+
+**Workarounds**:
+
+1. **Production Build** (Recommended):
+   ```bash
+   # Build all applications
+   pnpm build
+   
+   # Start in production mode
+   pnpm --filter host start &
+   pnpm --filter dashboard start &
+   pnpm --filter settings start
+   ```
+   Production builds often handle Module Federation + SSR better than development mode.
+
+2. **Docker Deployment**:
+   ```bash
+   docker-compose up
+   ```
+   The Docker setup uses production builds which typically work correctly.
+
+3. **Disable SSR for Affected Components**:
+   The Navigation component has been configured to handle SSR gracefully, but if you encounter issues with other components, wrap them with `dynamic` import:
+   ```typescript
+   import dynamic from 'next/dynamic';
+   
+   const MyComponent = dynamic(() => import('./MyComponent'), {
+     ssr: false
+   });
+   ```
+
+4. **Client-Side Only Testing**:
+   Access the standalone applications directly:
+   - Dashboard: http://localhost:3001
+   - Settings: http://localhost:3002
+
+**Root Cause**: Module Federation's runtime dependency sharing conflicts with Next.js SSR's React context during development hot reloading. This is being addressed in newer versions of the Module Federation plugin.
+
+**Status**: The codebase architecture is production-ready. This is purely a development-mode runtime compatibility issue between `@module-federation/nextjs-mf@8.x` and Next.js 14 SSR.
+
+For detailed debugging information, see [DEBUGGING_LOG.md](./DEBUGGING_LOG.md).
 
 ## 🏗️ Architecture
 
@@ -96,7 +146,32 @@ cd micro-frontend-demo
 
 # Install dependencies
 pnpm install
+```
 
+### Running the Application
+
+**Option 1: Production Mode (Recommended)**
+
+For the best experience and to avoid SSR-related issues, run in production mode:
+
+```bash
+# Build all applications
+pnpm build
+
+# Start all applications
+pnpm --filter host start &
+pnpm --filter dashboard start &
+pnpm --filter settings start
+
+# Or use individual start commands
+pnpm start:host      # http://localhost:3000
+pnpm start:dashboard # http://localhost:3001
+pnpm start:settings  # http://localhost:3002
+```
+
+**Option 2: Development Mode**
+
+```bash
 # Start all applications concurrently
 pnpm dev
 
@@ -104,6 +179,17 @@ pnpm dev
 pnpm dev:host      # http://localhost:3000
 pnpm dev:dashboard # http://localhost:3001
 pnpm dev:settings  # http://localhost:3002
+```
+
+> **Note**: If you encounter React context errors in development mode, see the [Known Issues](#known-issues) section above.
+
+**Option 3: Docker**
+
+```bash
+# Build and run with Docker Compose
+docker-compose up
+
+# Access at http://localhost:3000
 ```
 
 ### Access the Applications
