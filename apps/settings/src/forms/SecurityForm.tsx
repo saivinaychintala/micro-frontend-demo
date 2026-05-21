@@ -105,7 +105,7 @@ export default function SecurityForm() {
                     </svg>
                     <div className="ml-3">
                       <p className="text-sm text-blue-800">
-                        Two-factor authentication is active. You'll need to enter a code from your authenticator app when signing in.
+                        Two-factor authentication is active. You&apos;ll need to enter a code from your authenticator app when signing in.
                       </p>
                     </div>
                   </div>
