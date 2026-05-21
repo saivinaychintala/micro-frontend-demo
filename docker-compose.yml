@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  host:
+    build:
+      context: ./apps/host
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_DASHBOARD_URL=http://dashboard:3001
+      - NEXT_PUBLIC_SETTINGS_URL=http://settings:3002
+    depends_on:
+      - dashboard
+      - settings
+
+  dashboard:
+    build:
+      context: ./apps/dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+
+  settings:
+    build:
+      context: ./apps/settings
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
